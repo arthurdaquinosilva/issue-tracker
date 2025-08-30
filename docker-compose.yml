@@ -13,7 +13,7 @@ services:
     depends_on:
       - mysql
     environment:
-      - DATABASE_URL=mysql://root:root@mysql:3306/nextjs_db
+      - DATABASE_URL=mysql://root:root@mysql:3306/issue_tracker
 
   mysql:
     image: mysql:8.0
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: issue_tracker_db
+      MYSQL_DATABASE: issue_tracker
     ports:
       - "3306:3306"
     volumes:
