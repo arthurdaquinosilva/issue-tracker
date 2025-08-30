@@ -4,8 +4,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: issue-tracker-app
     ports:
       - "3000:3000"
       - "3030:3030"
     volumes:
       - .:/app
+    depends_on:
+      - mysql
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/nextjs_db
+
+  mysql:
+    image: mysql:8.0
+    container_name: issue-tracker-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: issue_tracker_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
