@@ -15,5 +15,6 @@ RUN mkdir -p /etc/ash && \
 
 EXPOSE 3000
 EXPOSE 3030
+EXPOSE 5555
 
 CMD ["tail", "-f", "/dev/null"]
