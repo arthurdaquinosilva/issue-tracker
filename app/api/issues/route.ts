@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
   if (!validation.success)
     return NextResponse.json(validation.error.format(), {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: HTTP_STATUS.BAD_REQUEST_400,
     });
 
   const createdIssue = await prisma.issue.create({
@@ -19,5 +19,5 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  return NextResponse.json(createdIssue, { status: HTTP_STATUS.CREATED });
+  return NextResponse.json(createdIssue, { status: HTTP_STATUS.CREATED_201 });
 }

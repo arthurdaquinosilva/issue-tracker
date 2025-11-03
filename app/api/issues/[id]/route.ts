@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const validation = issueSchema.safeParse(body);
   if (!validation.success)
     return NextResponse.json(validation.error.format(), {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: HTTP_STATUS.BAD_REQUEST_400,
     });
 
   const issue = await prisma.issue.findUnique({
@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (!issue)
     return NextResponse.json(
       { error: "Invalid issue" },
-      { status: HTTP_STATUS.NOT_FOUND },
+      { status: HTTP_STATUS.NOT_FOUND_404 },
     );
 
   const updatedIssue = await prisma.issue.update({
@@ -35,5 +35,5 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       description: body.description,
     },
   });
-  return NextResponse.json(updatedIssue, { status: HTTP_STATUS.OK });
+  return NextResponse.json(updatedIssue, { status: HTTP_STATUS.OK_200 });
 }
