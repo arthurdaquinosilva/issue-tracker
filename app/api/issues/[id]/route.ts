@@ -37,3 +37,23 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   });
   return NextResponse.json(updatedIssue, { status: HTTP_STATUS.OK_200 });
 }
+
+export async function DELETE(request: NextRequest, { params }: Params) {
+  const issue = await prisma.issue.findUnique({
+    where: {
+      id: parseInt(params.id),
+    },
+  });
+
+  if (!issue)
+    return NextResponse.json(
+      { error: "Invalid Issue" },
+      { status: HTTP_STATUS.NOT_FOUND_404 },
+    );
+
+  await prisma.issue.delete({
+    where: { id: parseInt(params.id) },
+  });
+
+  return new NextResponse(null, { status: HTTP_STATUS.NO_CONTENT_204 });
+}
