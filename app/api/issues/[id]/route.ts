@@ -1,6 +1,8 @@
+import authOptions from "@/app/auth/authOptions";
 import { HTTP_STATUS } from "@/app/lib/http-status";
 import { issueSchema } from "@/app/validationSchemas";
 import { prisma } from "@/prisma/client";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 interface Params {
@@ -8,6 +10,14 @@ interface Params {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const session = await getServerSession(authOptions);
+
+  if (!session)
+    return NextResponse.json(
+      { message: "Not authorized to edit Issue" },
+      { status: HTTP_STATUS.UNAUTHORIZED_401 },
+    );
+
   const body = await request.json();
   const validation = issueSchema.safeParse(body);
   if (!validation.success)
@@ -39,6 +49,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
+  const session = await getServerSession(authOptions);
+
+  if (!session)
+    return NextResponse.json(
+      { message: "Not authorized to delete Issue" },
+      { status: HTTP_STATUS.UNAUTHORIZED_401 },
+    );
+
   const issue = await prisma.issue.findUnique({
     where: {
       id: parseInt(params.id),
