@@ -11,7 +11,7 @@ interface Params {
 }
 
 const IssuesPage = async ({ searchParams }: Params) => {
-  const columns: {
+  const issueTableColumns: {
     label: string;
     value: keyof Issue;
     className?: string;
@@ -21,13 +21,25 @@ const IssuesPage = async ({ searchParams }: Params) => {
     { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
   ];
 
-  const statusParam = searchParams.status;
+  const statusSearchParam = searchParams.status;
   const statuses = Object.values(Status);
-  const validStatus = statuses.includes(statusParam) ? statusParam : undefined;
+  const validStatus = statuses.includes(statusSearchParam)
+    ? statusSearchParam
+    : undefined;
+
+  const orderBy = issueTableColumns
+    .map((column) => column.value)
+    .includes(searchParams.orderBy)
+    ? {
+        [searchParams.orderBy || undefined]: "asc",
+      }
+    : undefined;
+
   const issues = await prisma.issue.findMany({
     where: {
       status: validStatus,
     },
+    orderBy,
   });
 
   return (
@@ -37,7 +49,7 @@ const IssuesPage = async ({ searchParams }: Params) => {
         <Table.Root variant="surface">
           <Table.Header>
             <Table.Row>
-              {columns.map((column) => (
+              {issueTableColumns.map((column) => (
                 <Table.ColumnHeaderCell key={column.value}>
                   <Flex align="center" gap="1">
                     <NextLink
