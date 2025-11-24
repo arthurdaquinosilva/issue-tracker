@@ -34,6 +34,7 @@ const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
       <Text size="2">
         Page {currentPage} of {pageCount}
       </Text>
+
       <Button
         color="gray"
         variant="soft"
@@ -42,6 +43,7 @@ const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
       >
         <DoubleArrowLeftIcon />
       </Button>
+
       <Button
         color="gray"
         variant="soft"
@@ -50,6 +52,7 @@ const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
       >
         <ChevronLeftIcon />
       </Button>
+
       <Button
         color="gray"
         variant="soft"
@@ -58,6 +61,7 @@ const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
       >
         <ChevronRightIcon />
       </Button>
+
       <Button
         color="gray"
         variant="soft"

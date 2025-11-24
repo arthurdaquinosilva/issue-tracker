@@ -1,13 +1,14 @@
 import { IssueStatusBadge, Link } from "@/app/components";
+import Pagination from "@/app/components/Pagination";
 import { prisma } from "@/prisma/client";
 import { Issue, Status } from "@prisma/client";
+import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
 import IssueActions from "./IssueActions";
-import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 
 interface Params {
-  searchParams: { status: Status; orderBy: keyof Issue };
+  searchParams: { status: Status; orderBy: keyof Issue; page: string };
 }
 
 const IssuesPage = async ({ searchParams }: Params) => {
@@ -35,63 +36,80 @@ const IssuesPage = async ({ searchParams }: Params) => {
       }
     : undefined;
 
+  const currentPage = parseInt(searchParams.page) || 1;
+  const previousPage = currentPage - 1;
+  const itemsToShown = 5;
+  const itemsToSkip = previousPage * itemsToShown;
+
+  const where = { status: validStatus };
   const issues = await prisma.issue.findMany({
-    where: {
-      status: validStatus,
-    },
+    where,
     orderBy,
+    skip: itemsToSkip,
+    take: itemsToShown,
+  });
+
+  const totalRecordOfIssues = await prisma.issue.count({
+    where,
   });
 
   return (
     <div>
       <IssueActions />
       {issues.length > 0 && (
-        <Table.Root variant="surface">
-          <Table.Header>
-            <Table.Row>
-              {issueTableColumns.map((column) => (
-                <Table.ColumnHeaderCell
-                  key={column.value}
-                  className={column.className}
-                >
-                  <Flex align="center" gap="1">
-                    <NextLink
-                      href={{
-                        query: { ...searchParams, orderBy: column.value },
-                      }}
-                    >
-                      {column.label}
-                    </NextLink>
-                    {column.value === searchParams.orderBy ? (
-                      <ArrowUpIcon />
-                    ) : (
-                      <ArrowDownIcon />
-                    )}
-                  </Flex>
-                </Table.ColumnHeaderCell>
-              ))}
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {issues.map((issue) => (
-              <Table.Row key={issue.id}>
-                <Table.Cell>
-                  <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-                  <div className="md:hidden">
-                    <span className="font-bold">Status: </span>
-                    <IssueStatusBadge status={issue.status} />
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="hidden md:table-cell">
-                  <IssueStatusBadge status={issue.status} />
-                </Table.Cell>
-                <Table.Cell className="hidden md:table-cell">
-                  {issue.createdAt.toDateString()}
-                </Table.Cell>
+        <>
+          <Table.Root variant="surface" mb="4">
+            <Table.Header>
+              <Table.Row>
+                {issueTableColumns.map((column) => (
+                  <Table.ColumnHeaderCell
+                    key={column.value}
+                    className={column.className}
+                  >
+                    <Flex align="center" gap="1">
+                      <NextLink
+                        href={{
+                          query: { ...searchParams, orderBy: column.value },
+                        }}
+                      >
+                        {column.label}
+                      </NextLink>
+                      {column.value === searchParams.orderBy ? (
+                        <ArrowUpIcon />
+                      ) : (
+                        <ArrowDownIcon />
+                      )}
+                    </Flex>
+                  </Table.ColumnHeaderCell>
+                ))}
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
+            </Table.Header>
+            <Table.Body>
+              {issues.map((issue) => (
+                <Table.Row key={issue.id}>
+                  <Table.Cell>
+                    <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                    <div className="md:hidden">
+                      <span className="font-bold">Status: </span>
+                      <IssueStatusBadge status={issue.status} />
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="hidden md:table-cell">
+                    <IssueStatusBadge status={issue.status} />
+                  </Table.Cell>
+                  <Table.Cell className="hidden md:table-cell">
+                    {issue.createdAt.toDateString()}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+          <Pagination
+            pageSize={itemsToShown}
+            currentPage={currentPage}
+            itemCount={totalRecordOfIssues}
+          />
+        </>
       )}
     </div>
   );
