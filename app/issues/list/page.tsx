@@ -50,7 +50,10 @@ const IssuesPage = async ({ searchParams }: Params) => {
           <Table.Header>
             <Table.Row>
               {issueTableColumns.map((column) => (
-                <Table.ColumnHeaderCell key={column.value}>
+                <Table.ColumnHeaderCell
+                  key={column.value}
+                  className={column.className}
+                >
                   <Flex align="center" gap="1">
                     <NextLink
                       href={{
