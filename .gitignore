@@ -37,3 +37,6 @@ next-env.d.ts
 
 # project status (personal development notes)
 PROJECT_STATUS.md
+
+# Sentry Config File
+.env.sentry-build-plugin
